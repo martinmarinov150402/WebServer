@@ -39,13 +39,12 @@ void initializeRouter(Router* router)
     void (*helloPtr)(map<string,string>) = &helloCustomRoute;
     insertRoute(router,"POST:/testCustomRoute",helloPtr);   
 }
-void serve(int sockId,int sock2,Router* router)
+void serve(int sockId,Router* router)
 {
     string reply="";
     int valReader;
         char buffer[4096]= {0};
-        valReader = read(sock2, buffer, 1024);
-        recv(new_connection, (char*)&buffer, sizeof(buffer), 0);
+        recv(sockId, (char*)&buffer, sizeof(buffer), 0);
         pair<string,string>metPath = getMethodAndPath(buffer);
     if(metPath.first!="GET")
     {
@@ -89,6 +88,7 @@ void serve(int sockId,int sock2,Router* router)
 }
 int main()
 {
+    cout<<int('я');
     vector<thread> threads;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in address;
@@ -106,15 +106,14 @@ int main()
         perror("Can't bind");
         exit(EXIT_FAILURE);
     }
-    
+    if(listen(sock,4000000000)<0)
+    {
+        perror("Listen");
+        exit(EXIT_FAILURE);
+    }
     while(1)
     {
 
-        if(listen(sock,300000000)<0)
-        {
-            perror("Listen");
-            exit(EXIT_FAILURE);
-        }
         
         if((new_connection = accept(sock, (struct sockaddr *)&address,(socklen_t*)&addrlen))<0)
         {
@@ -123,17 +122,9 @@ int main()
         }
 
         
-        if(new_connection)
-        {
-            thread tmpTh(serve,new_connection,sock,router);
-            //Controller* cont = new Controller(new_connection,router);
-            tmpTh.join();
-            
-            
-
-        }
-        
-        //continue;
+        thread tmpTh(serve,new_connection,router);
+        //Controller* cont = new Controller(new_connection,router);
+        tmpTh.join();
     }
 
 }

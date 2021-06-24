@@ -6,7 +6,7 @@ struct Router
 {
     bool endOfRoute;
     void (*action)(map<string,string>);
-    Router* arr[255];
+    Router* arr[1112064];
     Router()
     {
         //socketId=0;
@@ -16,6 +16,8 @@ struct Router
 };
 void insertRoute(Router* a, string route, void (*fun_ptr)(map<string,string>))
 {
+    //asdsf/yyyy
+    
 
     for(int i=0;i<route.size();i++)
     {
